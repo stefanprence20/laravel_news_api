@@ -15,6 +15,7 @@ Ensure you have the following installed on your machine:
     ```bash
    git clone https://github.com/stefanprence20/laravel_news_api
    cd laravel_news_api
+   cp .env.example .env
    
 2. **Build and start the containers**:
     ```bash
@@ -28,7 +29,9 @@ Ensure you have the following installed on your machine:
 5. **Run the database migrations**:
     ```bash
    docker compose exec app php artisan migrate
-
+6. **Generate Open API documentation**:
+    ```bash
+   docker compose exec app php artisan l5-swagger:generate
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).

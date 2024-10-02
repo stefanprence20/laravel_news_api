@@ -1,6 +1,7 @@
 services:
     app:
-        image: php:8.2-fpm
+        build:
+            dockerfile: Dockerfile
         container_name: laravel_app
         working_dir: /var/www
         volumes:

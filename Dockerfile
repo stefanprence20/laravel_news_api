@@ -2,7 +2,7 @@ FROM php:8.2-fpm
 
 WORKDIR /var/www
 
-RUN apt-get update && apt-get install -y --no-cache \
+RUN apt-get update && apt-get install -y \
     build-essential \
     libpng-dev \
     libjpeg-dev \
@@ -20,10 +20,9 @@ RUN apt-get update && apt-get install -y --no-cache \
     libzip-dev \
     libicu-dev \
     g++ \
-    libmysqlclient-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install gd \
-    && docker-php-ext-install mysqli pdo pdo_mysql
+    && docker-php-ext-install pdo pdo_mysql mysqli
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
