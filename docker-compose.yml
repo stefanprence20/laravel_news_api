@@ -9,7 +9,6 @@ services:
             - "8000:8000"
         networks:
             - laravel
-
         environment:
             - PHP_EXTENSION_XDEBUG=1
         depends_on:
@@ -33,15 +32,23 @@ services:
         image: mysql:8.0
         container_name: mysql
         restart: unless-stopped
+        ports:
+            - '${FORWARD_DB_PORT:-3306}:3306'
         environment:
-            MYSQL_ROOT_PASSWORD: root
-            MYSQL_DATABASE: news_api
-            MYSQL_USER: user
-            MYSQL_PASSWORD: password
+            MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
+            MYSQL_ROOT_HOST: '%'
+            MYSQL_DATABASE: '${DB_DATABASE}'
+            MYSQL_USER: '${DB_USERNAME}'
+            MYSQL_PASSWORD: '${DB_PASSWORD}'
         volumes:
             - dbdata:/var/lib/mysql
         networks:
             - laravel
+        healthcheck:
+            test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+            interval: 10s
+            timeout: 5s
+            retries: 5
 
 volumes:
     dbdata:
