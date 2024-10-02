@@ -50,6 +50,14 @@ services:
             interval: 10s
             timeout: 5s
             retries: 5
+    mailpit:
+        image: axllent/mailpit
+        container_name: mailpit
+        ports:
+            - '${FORWARD_MAILPIT_PORT:-1025}:1025'
+            - '${FORWARD_MAILPIT_DASHBOARD_PORT:-8025}:8025'
+        networks:
+            - laravel
 
 volumes:
     dbdata:

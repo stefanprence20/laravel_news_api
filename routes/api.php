@@ -17,12 +17,12 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
-Route::get('logout', [AuthController::class, 'logout']);
-Route::post('reset-password', [AuthController::class, 'reset-password']);
+Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
+Route::post('reset-password', [AuthController::class, 'resetPassword'])->name('password.reset');
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('logout', [AuthController::class, 'logout']);
+});
 
-Route::middleware('auth:sanctum')
-    ->prefix('v1')
-    ->name('api.')
-    ->group(function () {
-        Route::apiResource('articles', 'ArticleController');
-    });
+Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
+    Route::apiResource('articles', 'ArticleController');
+});
