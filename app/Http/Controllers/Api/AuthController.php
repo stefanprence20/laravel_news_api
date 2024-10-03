@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @OA\Info(
@@ -71,6 +72,8 @@ class AuthController extends Controller
             'name' => 'required',
             'email' => 'required|email',
             'password' => 'required|min:6'
+        ],[
+            'email.unique' => 'This email is already taken. Please choose another one.',
         ]);
 
         $user = User::create([
@@ -170,7 +173,7 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'User logged out successfully.'
-        ], 200);
+        ]);
     }
 
     /**
@@ -207,6 +210,8 @@ class AuthController extends Controller
     {
         $request->validate([
             'email' => 'required|email',
+        ],[
+            'email.exists' => 'This email is not registered with us.',
         ]);
 
         $status = Password::sendResetLink(
@@ -215,7 +220,7 @@ class AuthController extends Controller
 
         return $status === Password::RESET_LINK_SENT
             ? response()->json(['message' => 'Password reset link sent.'])
-            : response()->json(['message' => 'Unable to send reset link.'], 422);
+            : response()->json(['message' => 'Unable to send reset link.'], Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 
     public function resetPassword(Request $request): JsonResponse
@@ -241,6 +246,6 @@ class AuthController extends Controller
 
         return $status === Password::PASSWORD_RESET
             ? response()->json(['message' => 'Password reset successfully.'])
-            : response()->json(['message' => 'Unable to reset password.'], 422);
+            : response()->json(['message' => 'Unable to reset password.'], Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 }

@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\V1\ArticleController;
+use App\Http\Controllers\Api\V1\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -16,7 +18,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::post('register', [AuthController::class, 'register']);
-Route::post('login', [AuthController::class, 'login']);
+Route::post('login', [AuthController::class, 'login'])->name('login');
 Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
 Route::post('reset-password', [AuthController::class, 'resetPassword'])->name('password.reset');
 Route::middleware('auth:sanctum')->group(function () {
@@ -24,5 +26,14 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
-    Route::apiResource('articles', 'ArticleController');
+
+    Route::controller(ArticleController::class)->prefix('articles')->group(function () {
+        Route::get('/', 'index');
+        Route::get('/search', 'search');
+        Route::get('/{id}', 'show');
+    });
+
+    Route::controller(UserController::class)->prefix('users')->group(function () {
+        Route::get('/', 'index');
+    });
 });
