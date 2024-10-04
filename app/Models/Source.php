@@ -10,6 +10,9 @@ class Source extends Model
 {
     use HasFactory;
 
+    const THE_GUARDIAN_SOURCE_NAME = 'The Guardian';
+    const NYTIMES_SOURCE_NAME = 'New York Times';
+
     /**
      * The attributes that are mass assignable.
      *

@@ -3,6 +3,7 @@
 namespace App\Services\NewsSources;
 
 use App\Contracts\NewsServiceInterface;
+use App\Models\Source;
 use Illuminate\Support\Facades\Http;
 
 class NYTimesApiService implements NewsServiceInterface
@@ -29,7 +30,7 @@ class NYTimesApiService implements NewsServiceInterface
                 'author' => $this->extractAuthorsFromByline($article['byline']),
                 'url' => $article['url'],
                 'published_at' => $article['published_date'],
-                'source' => $article['source'] ?? 'New York Times',
+                'source' => $article['source'] ?? Source::NYTIMES_SOURCE_NAME,
             ];
         }
 
