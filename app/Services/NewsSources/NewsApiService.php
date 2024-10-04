@@ -15,7 +15,7 @@ class NewsApiService implements NewsServiceInterface
         $this->apiKey = $apiKey;
     }
 
-    public function fetchDailyArticles(): array
+    public function fetchArticles(): array
     {
         $response = Http::get('https://newsapi.org/v2/top-headlines', [
             'apiKey' => $this->apiKey,

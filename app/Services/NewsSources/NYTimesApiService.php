@@ -15,9 +15,9 @@ class NYTimesApiService implements NewsServiceInterface
         $this->apiKey = $apiKey;
     }
 
-    public function fetchDailyArticles(): array
+    public function fetchArticles(): array
     {
-        $response = Http::get('https://api.nytimes.com/svc/topstories/v2/home.json', [
+        $response = Http::get('https://api.nytimes.com/svc/mostpopular/v2/viewed/1.json', [
             'api-key' => $this->apiKey,
         ]);
 
@@ -26,7 +26,7 @@ class NYTimesApiService implements NewsServiceInterface
             $articles[] = [
                 'title' => $article['title'],
                 'content' => $article['abstract'],
-                'author' => $article['byline'],
+                'author' => $this->extractAuthorsFromByline($article['byline']),
                 'url' => $article['url'],
                 'published_at' => $article['published_date'],
                 'source' => $article['source'] ?? 'New York Times',
@@ -34,5 +34,15 @@ class NYTimesApiService implements NewsServiceInterface
         }
 
         return $articles;
+    }
+
+    private function extractAuthorsFromByline(string $byline): array
+    {
+        $byline = preg_replace('/^By\s+/i', '', $byline);
+        $byline = str_replace(' and ', ',', $byline);
+
+        $authors = explode(',', $byline);
+
+        return array_map('trim', $authors);
     }
 }

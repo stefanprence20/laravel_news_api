@@ -19,7 +19,7 @@ class FetchArticleService
     public function fetchAndStoreArticles(): void
     {
         foreach ($this->newsServices as $newsService) {
-            $articles = $newsService->fetchDailyArticles();
+            $articles = $newsService->fetchArticles();
 
             foreach ($articles as $article) {
                 $this->articleService->save($article);

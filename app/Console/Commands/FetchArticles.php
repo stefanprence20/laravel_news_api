@@ -12,7 +12,7 @@ class FetchArticles extends Command
      *
      * @var string
      */
-    protected $signature = 'news:fetch-daily';
+    protected $signature = 'app:fetch-articles';
 
     /**
      * The console command description.

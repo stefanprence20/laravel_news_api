@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Models\Article;
+use App\Models\Author;
+use App\Models\Source;
 use Illuminate\Http\Request;
 
 class ArticleService
@@ -34,17 +36,37 @@ class ArticleService
      * @param mixed $articleData
      * @return void
      */
-    public function save(mixed $articleData): void
+    public function save(array $articleData): void
     {
-        Article::updateOrCreate(
+        $source = Source::updateOrCreate(
+            ['name' => $articleData['source'] ?? 'Unknown']
+        );
+
+        $article = Article::updateOrCreate(
             ['url' => $articleData['url']],
             [
                 'title' => $articleData['title'],
                 'content' => $articleData['content'] ?? '',
-                'author' => $articleData['author'] ?? '',
                 'published_at' => $articleData['publishedAt'] ?? now(),
-                'source' => $articleData['source']['name'] ?? 'Unknown'
+                'source_id' => $source->id,
             ]
         );
+
+        if (isset($articleData['author'])) {
+            $authorsInput = is_array($articleData['author'])
+                ? $articleData['author']
+                : explode(',', $articleData['author']);
+
+            $authorIds = [];
+            foreach ($authorsInput as $authorName) {
+                $authorName = trim($authorName);
+                if (!empty($authorName)) {
+                    $author = Author::firstOrCreate(['name' => $authorName]);
+                    $authorIds[] = $author->id;
+                }
+            }
+
+            $article->authors()->syncWithoutDetaching($authorIds);
+        }
     }
 }
