@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\V1\ArticleController;
+use App\Http\Controllers\Api\V1\UserNewsFeedController;
 use App\Http\Controllers\Api\V1\UserPreferenceController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -35,10 +36,15 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
         Route::get('/{article}', 'show');
     });
 
-    Route::controller(UserPreferenceController::class)->prefix('users')->group(function () {
-        Route::post('/preferences', 'addPreference');
-        Route::get('/preferences', 'getPreferences');
+    Route::prefix('users')->group(function () {
+        Route::controller(UserPreferenceController::class)->group(function () {
+            Route::post('/preferences', 'addPreference');
+            Route::get('/preferences', 'getPreferences');
+        });
+
+        Route::controller(UserNewsFeedController::class)->group(function () {
+            Route::get('/news-feed', 'getNewsFeed');
+        });
     });
 
-//    Route::get('/news-feed', 'newsFeed');
 });

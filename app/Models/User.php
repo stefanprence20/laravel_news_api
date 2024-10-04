@@ -54,7 +54,8 @@ class User extends Authenticatable
         return $this->morphedByMany(Author::class, 'preferable');
     }
 
-    public function preferences() {
+    public function preferences()
+    {
         return Preferable::where('user_id', $this->id)->get();
     }
 }

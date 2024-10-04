@@ -7,6 +7,10 @@ class FetchArticleService
     protected array $newsServices;
     public ArticleService $articleService;
 
+    /**
+     * @param array $newsServices
+     * @param ArticleService $articleService
+     */
     public function __construct(array $newsServices, ArticleService $articleService)
     {
         $this->newsServices = $newsServices;

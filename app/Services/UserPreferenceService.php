@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\Response;
@@ -10,7 +11,11 @@ use Symfony\Component\HttpFoundation\Response;
 class UserPreferenceService
 {
 
-    public function addPreference(Request $request)
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function addPreference(Request $request): JsonResponse
     {
         $data = $request->validate([
             'preference_type' => [
@@ -40,7 +45,11 @@ class UserPreferenceService
         return $user->preferences();
     }
 
-    public function getPreferences(Request $request)
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function getPreferences(Request $request): JsonResponse
     {
         $user = $request->user();
 
