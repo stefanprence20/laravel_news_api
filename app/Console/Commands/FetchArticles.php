@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Services\FetchArticleService;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Cache;
 
 class FetchArticles extends Command
 {
@@ -35,6 +36,8 @@ class FetchArticles extends Command
     public function handle(): void
     {
         $this->fetchArticleService->fetchAndStoreArticles();
+        Cache::tags(['articles'])->flush();
+
         $this->info('Daily news fetched successfully.');
     }
 }

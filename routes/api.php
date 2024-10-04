@@ -27,7 +27,7 @@ Route::middleware('throttle:guest')->controller(AuthController::class)->group(fu
     });
 });
 
-Route::middleware(['auth:sanctum', 'throttle:default'])->prefix('v1')->group(function () {
+Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
 
     Route::controller(ArticleController::class)->prefix('articles')->group(function () {
         Route::get('/', 'index');

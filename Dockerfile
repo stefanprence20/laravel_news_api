@@ -24,6 +24,13 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-install gd \
     && docker-php-ext-install pdo pdo_mysql mysqli
 
+RUN apt-get install \
+    autoconf \
+    make \
+    && pecl install -o -f redis \
+    && rm -rf /tmp/pear \
+    && docker-php-ext-enable redis
+
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 COPY . /var/www

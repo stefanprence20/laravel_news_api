@@ -7,6 +7,8 @@ use App\Models\Author;
 use App\Models\Source;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class ArticleService
 {
@@ -17,9 +19,12 @@ class ArticleService
      */
     public function paginate(Request $request): LengthAwarePaginator
     {
+        $page = $request->get('page', 1);
         $perPage = $request->input('per_page', 10);
 
-        return Article::with(['authors', 'source'])->paginate($perPage);
+        return Cache::tags(['articles'])->remember("articles_index_page_{$page}", 60, function () use ($perPage) {
+            return Article::with(['authors', 'source'])->paginate($perPage);
+        });
     }
 
     /**
@@ -95,5 +100,16 @@ class ArticleService
 
             $article->authors()->syncWithoutDetaching($authorIds);
         }
+    }
+
+    /**
+     * @param $article
+     * @return mixed
+     */
+    public function show($article): mixed
+    {
+        return Cache::tags(['articles'])->remember("articles_show_page_{$article->id}", 60, function () use ($article) {
+            return $article->load(['authors', 'source']);
+        });
     }
 }

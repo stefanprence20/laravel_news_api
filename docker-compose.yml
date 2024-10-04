@@ -50,6 +50,7 @@ services:
             interval: 10s
             timeout: 5s
             retries: 5
+
     mailpit:
         image: axllent/mailpit
         container_name: mailpit
@@ -59,8 +60,26 @@ services:
         networks:
             - laravel
 
+    redis:
+        image: 'redis:alpine'
+        ports:
+            - '${FORWARD_REDIS_PORT:-6379}:6379'
+        volumes:
+            - 'laravel-redis:/data'
+        networks:
+            - laravel
+        healthcheck:
+            test:
+                - CMD
+                - redis-cli
+                - ping
+            retries: 3
+            timeout: 5s
+
 volumes:
     dbdata:
+        driver: local
+    laravel-redis:
         driver: local
 
 networks:

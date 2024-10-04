@@ -43,6 +43,8 @@ class ArticleController extends Controller
      */
     public function show(Article $article): ArticleResource
     {
-        return new ArticleResource($article->load(['authors', 'source']));
+        $article = $this->service->show($article);
+
+        return new ArticleResource($article);
     }
 }
