@@ -24,13 +24,39 @@ class ArticleService
 
     /**
      * @param Request $request
-     * @return mixed
+     * @return LengthAwarePaginator
      */
-    public function search(Request $request): mixed
+    public function search(Request $request): LengthAwarePaginator
     {
         $perPage = $request->input('per_page', 10);
 
-        return Article::paginate($perPage);
+        $query = Article::query();
+
+        if ($keyword = $request->input('keyword')) {
+            $query->where('title', 'LIKE', '%' . $keyword . '%');
+        }
+
+        if ($fromDate = $request->input('from_date')) {
+            $query->where('published_at', '>=', $fromDate);
+        }
+
+        if ($toDate = $request->input('to_date')) {
+            $query->where('published_at', '<=', $toDate);
+        }
+
+        if ($sourceName = $request->input('source')) {
+            $query->whereHas('source', function ($q) use ($sourceName) {
+                $q->where('name', 'like', '%' . $sourceName . '%');
+            });
+        }
+
+        if ($authorName = $request->input('author')) {
+            $query->whereHas('authors', function ($q) use ($authorName) {
+                $q->where('name', 'like', '%' . $authorName . '%');
+            });
+        }
+
+        return $query->with(['authors', 'source'])->paginate($perPage);
     }
 
     /**
