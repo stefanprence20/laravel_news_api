@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Article;
 use App\Models\Author;
 use App\Models\Source;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
 
 class ArticleService
@@ -12,13 +13,13 @@ class ArticleService
 
     /**
      * @param Request $request
-     * @return mixed
+     * @return LengthAwarePaginator
      */
-    public function paginate(Request $request): mixed
+    public function paginate(Request $request): LengthAwarePaginator
     {
         $perPage = $request->input('per_page', 10);
 
-        return Article::paginate($perPage);
+        return Article::with(['authors', 'source'])->paginate($perPage);
     }
 
     /**

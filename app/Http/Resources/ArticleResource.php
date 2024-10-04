@@ -18,10 +18,10 @@ class ArticleResource extends JsonResource
             'id' => $this->id,
             'title' => $this->title,
             'content' => $this->content,
-            'author' => $this->author,
+            'authors' => AuthorResource::collection($this->whenLoaded('authors')),
             'url' => $this->url,
             'published_at' => $this->published_at,
-            'source' => $this->source,
+            'source' => new SourceResource($this->whenLoaded('source')),
         ];
     }
 }

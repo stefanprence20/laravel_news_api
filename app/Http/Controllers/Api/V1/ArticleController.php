@@ -43,6 +43,6 @@ class ArticleController extends Controller
      */
     public function show(Article $article): ArticleResource
     {
-        return new ArticleResource($article);
+        return new ArticleResource($article->load(['authors', 'source']));
     }
 }
