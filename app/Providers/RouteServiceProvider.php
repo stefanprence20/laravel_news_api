@@ -28,6 +28,16 @@ class RouteServiceProvider extends ServiceProvider
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
         });
 
+        // For unauthenticated users
+        RateLimiter::for('guest', function ($request) {
+            return Limit::perMinute(20)->by($request->ip());
+        });
+
+        // Expected to be the most used API call
+        RateLimiter::for('news-feed', function ($request) {
+            return Limit::perMinute(40)->by(optional($request->user())->id ?: $request->ip());
+        });
+
         $this->routes(function () {
             Route::middleware('api')
                 ->prefix('api')

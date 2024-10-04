@@ -4,7 +4,6 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\V1\ArticleController;
 use App\Http\Controllers\Api\V1\UserNewsFeedController;
 use App\Http\Controllers\Api\V1\UserPreferenceController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -18,7 +17,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::controller(AuthController::class)->group(function () {
+Route::middleware('throttle:guest')->controller(AuthController::class)->group(function () {
     Route::post('register', 'register');
     Route::post('login', 'login')->name('login');
     Route::post('forgot-password', 'forgotPassword');
@@ -28,7 +27,7 @@ Route::controller(AuthController::class)->group(function () {
     });
 });
 
-Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
+Route::middleware(['auth:sanctum', 'throttle:default'])->prefix('v1')->group(function () {
 
     Route::controller(ArticleController::class)->prefix('articles')->group(function () {
         Route::get('/', 'index');
@@ -43,7 +42,7 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
         });
 
         Route::controller(UserNewsFeedController::class)->group(function () {
-            Route::get('/news-feed', 'getNewsFeed');
+            Route::get('/news-feed', 'getNewsFeed')->middleware('throttle:news-feed');
         });
     });
 
