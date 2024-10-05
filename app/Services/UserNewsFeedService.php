@@ -23,6 +23,7 @@ class UserNewsFeedService
     public function getNewsFeed(Request $request): LengthAwarePaginator
     {
         $user = $request->user();
+        $perPage = $request->input('per_page', 10);
         $preferredSources = $user->sources->pluck('id');
         $preferredAuthors = $user->authors->pluck('id');
 
@@ -41,6 +42,6 @@ class UserNewsFeedService
                 }
             })
             ->with(['source', 'authors'])
-            ->paginate(10);
+            ->paginate($perPage);
     }
 }

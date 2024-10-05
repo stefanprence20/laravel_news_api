@@ -6,80 +6,39 @@
         "contact": {
             "email": "stefan.prence@gmail.com"
         },
-        "license": {
-            "name": "Apache 2.0",
-            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
-        },
         "version": "1.0.0"
     },
+    "servers": [
+        {
+            "url": "http://localhost/api",
+            "description": "Local API server"
+        }
+    ],
     "paths": {
-        "/api/register": {
+        "/register": {
             "post": {
                 "tags": [
                     "Authentication"
                 ],
                 "summary": "Register a new user",
-                "description": "Create a new user account with a name, email, and password.",
-                "operationId": "8e4e3cb7b46126f4696379d3c7eeb4ad",
+                "operationId": "5d4fa5d5607ed675ba93907e1fc94534",
                 "requestBody": {
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
-                                "required": [
-                                    "name",
-                                    "email",
-                                    "password"
-                                ],
-                                "properties": {
-                                    "name": {
-                                        "type": "string",
-                                        "example": "John Doe"
-                                    },
-                                    "email": {
-                                        "type": "string",
-                                        "example": "john.doe@example.com"
-                                    },
-                                    "password": {
-                                        "type": "string",
-                                        "format": "password",
-                                        "example": "secret123"
-                                    }
-                                },
-                                "type": "object"
+                                "$ref": "#/components/schemas/User"
                             }
                         }
                     }
                 },
                 "responses": {
-                    "200": {
+                    "201": {
                         "description": "User registered successfully",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "properties": {
-                                        "id": {
-                                            "type": "integer",
-                                            "example": 1
-                                        },
-                                        "name": {
-                                            "type": "string",
-                                            "example": "John Doe"
-                                        },
-                                        "email": {
-                                            "type": "string",
-                                            "example": "john.doe@example.com"
-                                        },
-                                        "created_at": {
-                                            "type": "string",
-                                            "example": "2024-10-01 12:34:56"
-                                        },
-                                        "updated_at": {
-                                            "type": "string",
-                                            "example": "2024-10-01 12:34:56"
-                                        }
-                                    },
-                                    "type": "object"
+                                    "$ref": "#/components/schemas/User"
                                 }
                             }
                         }
@@ -89,21 +48,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "The given data was invalid."
-                                        },
-                                        "errors": {
-                                            "type": "object",
-                                            "example": {
-                                                "email": [
-                                                    "The email field is required."
-                                                ]
-                                            }
-                                        }
-                                    },
-                                    "type": "object"
+                                    "$ref": "#/components/schemas/ErrorResponse"
                                 }
                             }
                         }
@@ -111,14 +56,13 @@
                 }
             }
         },
-        "/api/login": {
+        "/login": {
             "post": {
                 "tags": [
                     "Authentication"
                 ],
-                "summary": "Log in a user",
-                "description": "Authenticate a user and return an access token.",
-                "operationId": "222b2625838e3c57e017987f73598fda",
+                "summary": "Log in user",
+                "operationId": "67d6d0fdd54fba132e1b6f55ca254183",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -131,7 +75,8 @@
                                 "properties": {
                                     "email": {
                                         "type": "string",
-                                        "example": "john.doe@example.com"
+                                        "format": "email",
+                                        "example": "user@example.com"
                                     },
                                     "password": {
                                         "type": "string",
@@ -150,13 +95,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "properties": {
-                                        "access_token": {
-                                            "type": "string",
-                                            "example": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1..."
-                                        }
-                                    },
-                                    "type": "object"
+                                    "$ref": "#/components/schemas/LoginResponse"
                                 }
                             }
                         }
@@ -166,21 +105,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "The given data was invalid."
-                                        },
-                                        "errors": {
-                                            "type": "object",
-                                            "example": {
-                                                "password": [
-                                                    "Invalid credentials"
-                                                ]
-                                            }
-                                        }
-                                    },
-                                    "type": "object"
+                                    "$ref": "#/components/schemas/ErrorResponse"
                                 }
                             }
                         }
@@ -188,14 +113,13 @@
                 }
             }
         },
-        "/api/v1/logout": {
+        "/logout": {
             "post": {
                 "tags": [
                     "Authentication"
                 ],
-                "summary": "Log out a user",
-                "description": "Log out an authenticated user by revoking their access token.",
-                "operationId": "b66dd8a7864f561822c01bc8339363fb",
+                "summary": "Log out user",
+                "operationId": "28d48c13fca984400ac8de99f54ee13a",
                 "responses": {
                     "200": {
                         "description": "User logged out successfully",
@@ -205,7 +129,262 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "User logged out successfully"
+                                            "example": "User logged out successfully."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/forgot-password": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Send password reset link",
+                "operationId": "f46fe87b31c0dadd30642d353886e6f1",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "john.doe@example.com"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Password reset link sent successfully.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Password reset link sent."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/reset-password": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Reset a user password",
+                "operationId": "f93180f97c46f79e028b188d8763b2e1",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "token",
+                                    "email",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "token": {
+                                        "type": "string",
+                                        "example": "reset-token-123"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "user@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "newpassword123"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "newpassword123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Password reset successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Password reset successfully."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unable to reset password",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/articles": {
+            "get": {
+                "tags": [
+                    "Article"
+                ],
+                "summary": "Get all articles",
+                "operationId": "024de9182405b8b7593efbdf02a7ba30",
+                "responses": {
+                    "200": {
+                        "description": "A list of articles",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Article"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1/articles/search": {
+            "get": {
+                "tags": [
+                    "Article"
+                ],
+                "summary": "Search for articles",
+                "operationId": "393ee2b7b643baa08706ed2b23e82be2",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/keyword"
+                    },
+                    {
+                        "$ref": "#/components/parameters/per_page"
+                    },
+                    {
+                        "$ref": "#/components/parameters/from_date"
+                    },
+                    {
+                        "$ref": "#/components/parameters/to_date"
+                    },
+                    {
+                        "$ref": "#/components/parameters/source"
+                    },
+                    {
+                        "$ref": "#/components/parameters/author"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A list of articles",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Article"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The given data was invalid."
+                                        },
+                                        "errors": {
+                                            "description": "Validation error details",
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
@@ -237,26 +416,175 @@
                 ]
             }
         },
-        "/api/reset-password": {
+        "/v1/articles/{article}": {
+            "get": {
+                "tags": [
+                    "Article"
+                ],
+                "summary": "Get article by ID",
+                "operationId": "843d3068e2912fa5e4253283da3fe319",
+                "parameters": [
+                    {
+                        "name": "article",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Article details",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Article"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Resource not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Resource not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1/users/news-feed": {
+            "get": {
+                "tags": [
+                    "User News Feed"
+                ],
+                "summary": "Get user news-feed",
+                "operationId": "fbea16dbdebe2b805ac5090f2869dffa",
+                "responses": {
+                    "200": {
+                        "description": "A list of user articles based on preferences",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Article"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/v1/users/preferences": {
+            "get": {
+                "tags": [
+                    "User Preferences"
+                ],
+                "summary": "Get user preferences",
+                "operationId": "ca6771fbbfe8c70e07c9c92355cbb7f9",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/per_page"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A list of user preferences",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Preference"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
             "post": {
                 "tags": [
-                    "Authentication"
+                    "User Preferences"
                 ],
-                "summary": "Send password reset link",
-                "description": "Send a password reset link to the user's email address.",
-                "operationId": "0a6624b616e4ba5a310a61d9f7418c35",
+                "summary": "Add user preference",
+                "operationId": "990ed640af19b272bc35ff8d28222e6a",
                 "requestBody": {
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
-                                "required": [
-                                    "email"
-                                ],
                                 "properties": {
-                                    "email": {
+                                    "preference_type": {
                                         "type": "string",
-                                        "example": "john.doe@example.com"
+                                        "example": "source"
+                                    },
+                                    "preference_ids": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        },
+                                        "example": "[1,2,3]"
                                     }
                                 },
                                 "type": "object"
@@ -266,17 +594,11 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Password reset link sent",
+                        "description": "A list of recently added user preferences",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Password reset link sent."
-                                        }
-                                    },
-                                    "type": "object"
+                                    "$ref": "#/components/schemas/Preference"
                                 }
                             }
                         }
@@ -289,15 +611,27 @@
                                     "properties": {
                                         "message": {
                                             "type": "string",
-                                            "example": "The email field is required."
+                                            "example": "The given data was invalid."
                                         },
                                         "errors": {
-                                            "type": "object",
-                                            "example": {
-                                                "email": [
-                                                    "The email field is required."
-                                                ]
-                                            }
+                                            "description": "Validation error details",
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
                                         }
                                     },
                                     "type": "object"
@@ -305,7 +639,232 @@
                             }
                         }
                     }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "User": {
+                "required": [
+                    "name",
+                    "email",
+                    "password"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "password": {
+                        "type": "string",
+                        "format": "password"
+                    }
+                },
+                "type": "object"
+            },
+            "Article": {
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "id": {
+                                    "type": "integer"
+                                },
+                                "title": {
+                                    "type": "string"
+                                },
+                                "content": {
+                                    "type": "string"
+                                },
+                                "authors": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Author"
+                                    }
+                                },
+                                "url": {
+                                    "type": "string",
+                                    "format": "url"
+                                },
+                                "published_at": {
+                                    "type": "string",
+                                    "format": "date-time"
+                                },
+                                "source": {
+                                    "$ref": "#/components/schemas/Source"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "Author": {
+                "required": [
+                    "id",
+                    "name"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "Source": {
+                "required": [
+                    "id",
+                    "name"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "Preference": {
+                "required": [
+                    "id",
+                    "user_id",
+                    "preferable_id",
+                    "preferable_type"
+                ],
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "id": {
+                                    "type": "integer",
+                                    "example": 4
+                                },
+                                "user_id": {
+                                    "type": "integer",
+                                    "example": 14
+                                },
+                                "preferable_id": {
+                                    "type": "integer",
+                                    "example": 1
+                                },
+                                "preferable_type": {
+                                    "type": "string",
+                                    "example": "Source"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "LoginResponse": {
+                "properties": {
+                    "access_token": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "ErrorResponse": {
+                "properties": {
+                    "message": {
+                        "type": "string"
+                    },
+                    "errors": {
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "parameters": {
+            "keyword": {
+                "name": "keyword",
+                "in": "query",
+                "required": false,
+                "schema": {
+                    "type": "string"
                 }
+            },
+            "per_page": {
+                "name": "per_page",
+                "in": "query",
+                "required": false,
+                "schema": {
+                    "type": "integer",
+                    "example": 10
+                }
+            },
+            "from_date": {
+                "name": "from_date",
+                "in": "query",
+                "required": false,
+                "schema": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "2024-10-01"
+                }
+            },
+            "to_date": {
+                "name": "to_date",
+                "in": "query",
+                "required": false,
+                "schema": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "2024-10-31"
+                }
+            },
+            "source": {
+                "name": "source",
+                "in": "query",
+                "required": false,
+                "schema": {
+                    "type": "string",
+                    "example": "The Guardian"
+                }
+            },
+            "author": {
+                "name": "author",
+                "in": "query",
+                "required": false,
+                "schema": {
+                    "type": "string"
+                }
+            },
+            "article": {
+                "name": "article",
+                "in": "path",
+                "required": true,
+                "schema": {
+                    "type": "integer",
+                    "example": 1
+                }
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
             }
         }
     },
@@ -313,6 +872,18 @@
         {
             "name": "Authentication",
             "description": "Authentication"
+        },
+        {
+            "name": "Article",
+            "description": "Article"
+        },
+        {
+            "name": "User News Feed",
+            "description": "User News Feed"
+        },
+        {
+            "name": "User Preferences",
+            "description": "User Preferences"
         }
     ]
 }
