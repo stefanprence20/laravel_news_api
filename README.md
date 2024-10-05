@@ -32,6 +32,9 @@ Ensure you have the following installed on your machine:
 6. **Generate Open API documentation**:
     ```bash
    docker compose exec app php artisan l5-swagger:generate
+7. **Create the test database**:
+    ```bash
+   docker compose exec app php artisan app:create-test-database test_news_api
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
