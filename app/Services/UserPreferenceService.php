@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\User;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -13,9 +13,9 @@ class UserPreferenceService
 
     /**
      * @param Request $request
-     * @return JsonResponse
+     * @return Collection|JsonResponse
      */
-    public function addPreference(Request $request): JsonResponse
+    public function addPreference(Request $request): Collection|JsonResponse
     {
         $data = $request->validate([
             'preference_type' => [
@@ -47,9 +47,9 @@ class UserPreferenceService
 
     /**
      * @param Request $request
-     * @return JsonResponse
+     * @return Collection
      */
-    public function getPreferences(Request $request): JsonResponse
+    public function getPreferences(Request $request): Collection
     {
         $user = $request->user();
 
