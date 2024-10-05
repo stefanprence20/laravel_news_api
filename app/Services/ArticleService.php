@@ -5,15 +5,16 @@ namespace App\Services;
 use App\Models\Article;
 use App\Models\Author;
 use App\Models\Source;
+use App\Traits\CacheTrait;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class ArticleService
 {
+    use CacheTrait;
 
     /**
      * @param Request $request
@@ -21,12 +22,14 @@ class ArticleService
      */
     public function paginate(Request $request): LengthAwarePaginator
     {
-        $page = $request->get('page', 1);
         $perPage = $request->input('per_page', 10);
 
-        return Cache::tags(['articles'])->remember("articles_index_page_{$page}", 60, function () use ($perPage) {
-            return Article::with(['authors', 'source'])->paginate($perPage);
-        });
+        return $this->cacheResults(
+            'articles_index_',
+            $request->all(),
+            fn() => Article::with(['authors', 'source'])->paginate($perPage),
+            'articles'
+        );
     }
 
     /**
@@ -35,6 +38,15 @@ class ArticleService
      */
     public function search(Request $request): LengthAwarePaginator
     {
+        $request->validate([
+            'keyword'     => 'nullable|string|max:255',
+            'per_page'    => 'nullable|integer',
+            'from_date'   => 'nullable|date|before_or_equal:today',
+            'to_date'     => 'nullable|date|after_or_equal:from_date|before_or_equal:today',
+            'source'      => 'nullable|string|max:255',
+            'author'      => 'nullable|string|max:255',
+        ]);
+
         $perPage = $request->input('per_page', 10);
 
         $query = Article::query();
@@ -44,11 +56,11 @@ class ArticleService
         }
 
         if ($fromDate = $request->input('from_date')) {
-            $query->where('published_at', '>=', $fromDate);
+            $query->where('published_at', '>=', Carbon::parse($fromDate)->startOfDay());
         }
 
         if ($toDate = $request->input('to_date')) {
-            $query->where('published_at', '<=', $toDate);
+            $query->where('published_at', '<=', Carbon::parse($toDate)->endOfDay());
         }
 
         if ($sourceName = $request->input('source')) {
@@ -63,7 +75,12 @@ class ArticleService
             });
         }
 
-        return $query->with(['authors', 'source'])->paginate($perPage);
+        return $this->cacheResults(
+            'articles_search_',
+            $request->all(),
+            fn() => $query->with(['authors', 'source'])->paginate($perPage),
+            'articles'
+        );
     }
 
     /**
@@ -74,13 +91,10 @@ class ArticleService
     {
         // Using a transaction to ensure all data is saved or none is saved
         DB::transaction(function () use ($article) {
-            // Step 1: Update or create the source
             $source = $this->saveSource($article);
 
-            // Step 2: Update or create the article
             $articleModel = $this->saveArticle($article, $source);
 
-            // Step 3: Update or create the authors and associate with the article
             if (isset($article['author'])) {
                 $this->saveAuthors($articleModel, $article['author']);
             }
@@ -129,14 +143,12 @@ class ArticleService
         foreach ($authorsInput as $authorName) {
             $authorName = trim($authorName);
             if (!empty($authorName)) {
-                // Using firstOrCreate for each author
                 $author = Author::firstOrCreate(['name' => $authorName]);
                 $authorIds[] = $author->id;
             }
         }
 
         if (!empty($authorIds)) {
-            // Sync authors without detaching existing relationships
             $article->authors()->syncWithoutDetaching($authorIds);
         }
     }
@@ -147,8 +159,11 @@ class ArticleService
      */
     public function show($article): mixed
     {
-        return Cache::tags(['articles'])->remember("articles_show_page_{$article->id}", 60, function () use ($article) {
-            return $article->load(['authors', 'source']);
-        });
+        return $this->cacheResults(
+            'articles_show_',
+            [$article->id],
+            fn() => $article->load(['authors', 'source']),
+            'articles'
+        );
     }
 }

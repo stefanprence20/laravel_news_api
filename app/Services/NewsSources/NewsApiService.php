@@ -21,6 +21,7 @@ class NewsApiService extends AbstractNewsApiService
     {
         $response = $this->makeRequest(self::METHOD_GET, '/top-headlines', [
             'country' => 'us',
+            'apiKey' => $this->apiKey,
         ]);
 
         return $this->extractArticles($response['articles']);
@@ -33,10 +34,10 @@ class NewsApiService extends AbstractNewsApiService
 
     protected function extractContent(array $article): string
     {
-        return $article['content'];
+        return $article['content'] ?? '';
     }
 
-    protected function extractAuthors(array $article): array
+    protected function extractAuthors(array $article): mixed
     {
         return $article['author'];
     }

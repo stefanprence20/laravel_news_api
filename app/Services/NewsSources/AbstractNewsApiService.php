@@ -32,7 +32,7 @@ abstract class AbstractNewsApiService implements NewsServiceInterface
 
     abstract protected function extractContent(array $article): string;
 
-    abstract protected function extractAuthors(array $article): array;
+    abstract protected function extractAuthors(array $article): mixed;
 
     abstract protected function extractUrl(array $article): string;
 
@@ -50,18 +50,12 @@ abstract class AbstractNewsApiService implements NewsServiceInterface
      */
     public function makeRequest(string $method, string $endpoint, array $params = [], array $headers = []): array
     {
-        // Always attach the API key to the request parameters
-        $params['apiKey'] = $this->apiKey;
-
-        // Set default headers
         $defaultHeaders = [
             'Accept' => 'application/json',
         ];
 
-        // Merge default headers with any additional headers
         $headers = array_merge($defaultHeaders, $headers);
 
-        // Perform the request using the method provided
         $response = Http::withHeaders($headers)->$method($this->url . $endpoint, $params);
 
         // Check for a successful response
@@ -69,7 +63,6 @@ abstract class AbstractNewsApiService implements NewsServiceInterface
             throw new Exception('API request error: ' . $response->body());
         }
 
-        // Return the response JSON
         return $response->json();
     }
 

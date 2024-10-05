@@ -20,7 +20,9 @@ class NYTimesApiService extends AbstractNewsApiService
      */
     public function fetchArticles(): array
     {
-        $response = $this->makeRequest(self::METHOD_GET, '/svc/mostpopular/v2/viewed/1.json');
+        $response = $this->makeRequest(self::METHOD_GET, '/svc/mostpopular/v2/viewed/1.json', [
+            'api-key' => $this->apiKey,
+        ]);
 
         return $this->extractArticles($response['results']);
     }

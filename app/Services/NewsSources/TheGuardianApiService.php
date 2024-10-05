@@ -9,8 +9,8 @@ class TheGuardianApiService extends AbstractNewsApiService
 {
     public function __construct()
     {
-        $this->apiKey = config('news_services.guardian_api_key');
-        $this->url = config('news_services.guardian_api_url');
+        $this->apiKey = config('news_services.the_guardian_api_key');
+        $this->url = config('news_services.the_guardian_api_url');
         parent::__construct($this->apiKey, $this->url);
     }
 
@@ -25,6 +25,7 @@ class TheGuardianApiService extends AbstractNewsApiService
             'show-tags' => 'contributor',
             'show-fields' => 'trailText',
             'show-blocks' => 'body:key-events',
+            'api-key' => $this->apiKey,
         ]);
 
         return $this->extractArticles($response['response']['results']);
