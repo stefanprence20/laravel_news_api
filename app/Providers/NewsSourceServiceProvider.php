@@ -16,17 +16,11 @@ class NewsSourceServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->singleton(NewsApiService::class, function () {
-            return new NewsApiService(config('news_services.news_api_key'));
-        });
+        $this->app->singleton(NewsApiService::class);
 
-        $this->app->singleton(NYTimesApiService::class, function () {
-            return new NYTimesApiService(config('news_services.nytimes_api_key'));
-        });
+        $this->app->singleton(NYTimesApiService::class);
 
-        $this->app->singleton(TheGuardianApiService::class, function () {
-            return new TheGuardianApiService(config('news_services.the_guardian_api_key'));
-        });
+        $this->app->singleton(TheGuardianApiService::class);
 
         $this->app->singleton(FetchArticleService::class, function ($app) {
             $newsServices = [

@@ -7,6 +7,16 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
+/**
+ * @property string $title
+ * @property string $content
+ * @property string $url
+ * @property string $published_at
+ * @property int $source_id
+ * @property string $created_at
+ * @property string $updated_at
+ * @property int $id
+ */
 class Article extends Model
 {
     use HasFactory;

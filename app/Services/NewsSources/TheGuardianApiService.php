@@ -2,24 +2,25 @@
 
 namespace App\Services\NewsSources;
 
-use App\Contracts\NewsServiceInterface;
 use App\Models\Source;
-use Illuminate\Support\Facades\Http;
+use Exception;
 
-class TheGuardianApiService implements NewsServiceInterface
+class TheGuardianApiService extends AbstractNewsApiService
 {
-
-    protected string $apiKey;
-
-    public function __construct(string $apiKey)
+    public function __construct()
     {
-        $this->apiKey = $apiKey;
+        $this->apiKey = config('news_services.guardian_api_key');
+        $this->url = config('news_services.guardian_api_url');
+        parent::__construct($this->apiKey, $this->url);
     }
 
+    /**
+     * @return array
+     * @throws Exception
+     */
     public function fetchArticles(): array
     {
-        $response = Http::get('https://content.guardianapis.com/search', [
-            'api-key' => $this->apiKey,
+        $response = $this->makeRequest(self::METHOD_GET, '/search', [
             'page-size' => 20,
             'show-tags' => 'contributor',
             'show-fields' => 'trailText',
@@ -28,7 +29,7 @@ class TheGuardianApiService implements NewsServiceInterface
 
         $articles = [];
 
-        foreach ($response->json()['response']['results'] as $article) {
+        foreach ($response['response']['results'] as $article) {
             $articles[] = [
                 'title' => $article['webTitle'],
                 'content' => $this->getContentSummary($article['blocks'], $article['fields']),

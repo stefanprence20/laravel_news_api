@@ -2,29 +2,30 @@
 
 namespace App\Services\NewsSources;
 
-use App\Contracts\NewsServiceInterface;
-use Illuminate\Support\Facades\Http;
+use Exception;
 
-class NewsApiService implements NewsServiceInterface
+class NewsApiService extends AbstractNewsApiService
 {
-
-    protected string $apiKey;
-
-    public function __construct(string $apiKey)
+    public function __construct()
     {
-        $this->apiKey = $apiKey;
+        $this->apiKey = config('news_services.news_api_key');
+        $this->url = config('news_services.news_api_url');
+        parent::__construct($this->apiKey, $this->url);
     }
 
+    /**
+     * @return array
+     * @throws Exception
+     */
     public function fetchArticles(): array
     {
-        $response = Http::get('https://newsapi.org/v2/top-headlines', [
-            'apiKey' => $this->apiKey,
+        $response = $this->makeRequest(self::METHOD_GET, '/top-headlines', [
             'country' => 'us',
         ]);
 
         $articles = [];
 
-        foreach ($response->json()['articles'] as $article) {
+        foreach ($response['articles'] as $article) {
             $articles[] = [
                 'title' => $article['title'],
                 'content' => $article['content'],
