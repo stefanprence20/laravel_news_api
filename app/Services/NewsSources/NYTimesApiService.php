@@ -22,28 +22,42 @@ class NYTimesApiService extends AbstractNewsApiService
     {
         $response = $this->makeRequest(self::METHOD_GET, '/svc/mostpopular/v2/viewed/1.json');
 
-        $articles = [];
-        foreach ($response['results'] as $article) {
-            $articles[] = [
-                'title' => $article['title'],
-                'content' => $article['abstract'],
-                'author' => $this->extractAuthorsFromByline($article['byline']),
-                'url' => $article['url'],
-                'published_at' => $article['published_date'],
-                'source' => $article['source'] ?? Source::NYTIMES_SOURCE_NAME,
-            ];
-        }
-
-        return $articles;
+        return $this->extractArticles($response['results']);
     }
 
-    private function extractAuthorsFromByline(string $byline): array
+    protected function extractTitle(array $article): string
     {
+        return $article['title'];
+    }
+
+    protected function extractContent(array $article): string
+    {
+        return $article['abstract'];
+    }
+
+    protected function extractAuthors(array $article): array
+    {
+        $byline = $article['byline'];
         $byline = preg_replace('/^By\s+/i', '', $byline);
         $byline = str_replace(' and ', ',', $byline);
 
         $authors = explode(',', $byline);
 
         return array_map('trim', $authors);
+    }
+
+    protected function extractUrl(array $article): string
+    {
+        return $article['url'];
+    }
+
+    protected function extractPublishedAt(array $article): string
+    {
+        return $article['published_date'];
+    }
+
+    protected function extractSource(array $article): string
+    {
+        return $article['source'] ?? Source::NYTIMES_SOURCE_NAME;
     }
 }

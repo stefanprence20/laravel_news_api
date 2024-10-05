@@ -27,41 +27,48 @@ class TheGuardianApiService extends AbstractNewsApiService
             'show-blocks' => 'body:key-events',
         ]);
 
-        $articles = [];
-
-        foreach ($response['response']['results'] as $article) {
-            $articles[] = [
-                'title' => $article['webTitle'],
-                'content' => $this->getContentSummary($article['blocks'], $article['fields']),
-                'author' => $this->extractAuthorsFromTags($article['tags']),
-                'url' => $article['webUrl'],
-                'published_at' => $article['webPublicationDate'],
-                'source' => Source::THE_GUARDIAN_SOURCE_NAME,
-            ];
-        }
-
-        return $articles;
+        return $this->extractArticles($response['response']['results']);
     }
 
-    private function extractAuthorsFromTags(array $tags): array
+    protected function extractTitle(array $article): string
     {
-        $authors = [];
-
-        foreach ($tags as $tag) {
-            $authors[] = $tag['webTitle'];
-        }
-
-        return $authors;
+        return $article['webTitle'];
     }
 
-    private function getContentSummary(array $blocks, array $fields): ?string
+    protected function extractContent(array $article): string
     {
+        $blocks = $article['blocks'];
+        $fields = $article['fields'];
         if (isset($blocks['requestedBodyBlocks']['body:key-events'][0])) {
             return $blocks['requestedBodyBlocks']['body:key-events'][0]['bodyTextSummary'] ?? '';
         } elseif (isset($fields['trailText'])) {
             return $fields['trailText'];
         }
-
         return '';
+    }
+
+    protected function extractAuthors(array $article): array
+    {
+        $authors = [];
+        $tags = $article['tags'] ?? [];
+        foreach ($tags as $tag) {
+            $authors[] = $tag['webTitle'];
+        }
+        return $authors;
+    }
+
+    protected function extractUrl(array $article): string
+    {
+        return $article['webUrl'];
+    }
+
+    protected function extractPublishedAt(array $article): string
+    {
+        return $article['webPublicationDate'];
+    }
+
+    protected function extractSource(array $article): string
+    {
+        return Source::THE_GUARDIAN_SOURCE_NAME;
     }
 }

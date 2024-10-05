@@ -23,19 +23,36 @@ class NewsApiService extends AbstractNewsApiService
             'country' => 'us',
         ]);
 
-        $articles = [];
+        return $this->extractArticles($response['articles']);
+    }
 
-        foreach ($response['articles'] as $article) {
-            $articles[] = [
-                'title' => $article['title'],
-                'content' => $article['content'],
-                'author' => $article['author'],
-                'url' => $article['url'],
-                'published_at' => $article['publishedAt'],
-                'source' => $article['source']['name'],
-            ];
-        }
+    protected function extractTitle(array $article): string
+    {
+        return $article['title'];
+    }
 
-        return $articles;
+    protected function extractContent(array $article): string
+    {
+        return $article['content'];
+    }
+
+    protected function extractAuthors(array $article): array
+    {
+        return $article['author'];
+    }
+
+    protected function extractUrl(array $article): string
+    {
+        return $article['url'];
+    }
+
+    protected function extractPublishedAt(array $article): string
+    {
+        return $article['publishedAt'];
+    }
+
+    protected function extractSource(array $article): string
+    {
+        return $article['source']['name'];
     }
 }

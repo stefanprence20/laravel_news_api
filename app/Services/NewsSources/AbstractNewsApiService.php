@@ -28,7 +28,17 @@ abstract class AbstractNewsApiService implements NewsServiceInterface
         $this->url = $url;
     }
 
-    // Generic API request method
+    abstract protected function extractTitle(array $article): string;
+
+    abstract protected function extractContent(array $article): string;
+
+    abstract protected function extractAuthors(array $article): array;
+
+    abstract protected function extractUrl(array $article): string;
+
+    abstract protected function extractPublishedAt(array $article): string;
+
+    abstract protected function extractSource(array $article): string;
 
     /**
      * @param string $method
@@ -61,5 +71,27 @@ abstract class AbstractNewsApiService implements NewsServiceInterface
 
         // Return the response JSON
         return $response->json();
+    }
+
+    /**
+     * @param array $articlesData
+     * @return array
+     */
+    public function extractArticles(array $articlesData): array
+    {
+        $articles = [];
+
+        foreach ($articlesData as $article) {
+            $articles[] = [
+                'title' => $this->extractTitle($article),
+                'content' => $this->extractContent($article),
+                'author' => $this->extractAuthors($article),
+                'url' => $this->extractUrl($article),
+                'published_at' => $this->extractPublishedAt($article),
+                'source' => $this->extractSource($article),
+            ];
+        }
+
+        return $articles;
     }
 }
